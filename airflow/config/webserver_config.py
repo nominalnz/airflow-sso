@@ -24,56 +24,45 @@ WTF_CSRF_TIME_LIMIT = None
 # for details.
 
 # The authentication type
-# AUTH_OID : Is for OpenID
-# AUTH_DB : Is for database
-# AUTH_LDAP : Is for LDAP
-# AUTH_REMOTE_USER : Is for using REMOTE_USER from web server
 # AUTH_OAUTH : Is for OAuth
 AUTH_TYPE = AUTH_OAUTH
 
 # Uncomment to setup Full admin role name
 # AUTH_ROLE_ADMIN = 'Admin'
 
-# Uncomment and set to desired role to enable access without authentication
-# AUTH_ROLE_PUBLIC = 'Viewer'
-
-# Will allow user self registration
-# AUTH_USER_REGISTRATION = True
-
-# The default user self registration role
-# AUTH_USER_REGISTRATION_ROLE = "Public"
-
-
-AUTH_TYPE = AUTH_OAUTH
-
 AUTH_ROLES_SYNC_AT_LOGIN = True # Check roles on every login
 AUTH_USER_REGISTRATION = True  # Allow users who are not already in the FAB DB
 AUTH_USER_REGISTRATION_ROLE = "Public"  # this role will be given in addition to any AUTH_ROLES_MAPPING
 
 AUTH_ROLES_MAPPING = {
-    "AZU-AIRFLOW-USERS": ["User"],
-    "AZU-AIRFLOW-ADMIN": ["Admin"],
+    "db925d57-0219-4baf-8d2c-80e0e79c7b7b": ["User"],
+    "eaa4ae52-583e-4db1-b3b9-5251fd892bc2": ["Admin"],
 }
 
-# the list of providers which the user can choose from
+AZURE_APPLICATION_ID = os.environ["AZURE_APPLICATION_ID"]
+AZURE_APPLICATION_SECRET = os.environ["AZURE_APPLICATION_SECRET"]
+AZURE_TENANT_ID = os.environ["AZURE_TENANT_ID"]
+
+# scopes: openid email profile offline_access User.Read
+# https://learn.microsoft.com/en-us/entra/identity-platform/scopes-oidc
+
 OAUTH_PROVIDERS = [
     {
         "name": "azure",
         "icon": "fa-windows",
         "token_key": "access_token",
         "remote_app": {
-            "client_id": "AZURE_APPLICATION_ID",
-            "client_secret": "AZURE_SECRET",
-            "api_base_url": "https://login.microsoftonline.com/AZURE_TENANT_ID/oauth2",
+            "client_id": AZURE_APPLICATION_ID,
+            "client_secret": AZURE_APPLICATION_SECRET,
+            "api_base_url": f"https://login.microsoftonline.com/{AZURE_TENANT_ID}/oauth2/v2.0",
             "client_kwargs": {
-                "scope": "User.read name preferred_username email profile upn",
-                "resource": "AZURE_APPLICATION_ID",
-                # Optionally enforce signature JWT verification
-                "verify_signature": False
+                "scope": "openid email profile offline_access",
+                "resource": AZURE_APPLICATION_ID,
             },
             "request_token_url": None,
-            "access_token_url": "https://login.microsoftonline.com/AZURE_TENANT_ID/oauth2/token",
-            "authorize_url": "https://login.microsoftonline.com/AZURE_TENANT_ID/oauth2/authorize",
+            "access_token_url": f"https://login.microsoftonline.com/{AZURE_TENANT_ID}/oauth2/v2.0/token",
+            "authorize_url": f"https://login.microsoftonline.com/{AZURE_TENANT_ID}/oauth2/v2.0/authorize",
+            "jwks_uri": f"https://login.microsoftonline.com/{AZURE_TENANT_ID}/discovery/v2.0/keys"
         },
     },
 ]

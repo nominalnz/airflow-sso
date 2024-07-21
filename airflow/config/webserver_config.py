@@ -56,7 +56,7 @@ OAUTH_PROVIDERS = [
             "client_secret": AZURE_APPLICATION_SECRET,
             "api_base_url": f"https://login.microsoftonline.com/{AZURE_TENANT_ID}/oauth2/v2.0",
             "client_kwargs": {
-                "scope": "openid email profile offline_access",
+                "scope": "openid email profile",
                 "resource": AZURE_APPLICATION_ID,
             },
             "request_token_url": None,
